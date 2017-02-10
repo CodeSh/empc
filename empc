@@ -1,0 +1,38 @@
+#!/bin/bash
+ERRORS=(
+"El archivo ya existe."
+"Se requiere un parametro para archivo."
+"No se pudo ejecutar el binario "
+)
+
+if [[ ! $1 ]]; then
+   printf "Error: %s\n" "${ERRORS[1]}"; exit
+elif [[ -f $1 ]]; then
+   printf "Error: %s\n¿Desea volver a crearlo?\n" "${ERRORS[0]}"
+   read opt
+   case $opt in
+           "y"|"Y"|"s") ;;
+           *) printf "Saliendo...\n"; exit;;
+   esac
+fi
+   cat <<STR > ${1}
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+   // código
+}
+STR
+printf "¿Con qué desea editarlo?\n\t%s\n\t%s\n\t%s\n" "[1] atom" "[2] nano" "[3] vim"
+read opt
+case $opt in
+        1) bin='atom';;
+        2) bin='nano';;
+        3) bin='vim';;
+esac
+execute=$(which $bin)
+if [[ $execute ]]; then
+        $execute $1
+else
+        printf "Error: %s$bin.\n" "${ERRORS[2]}"
+fi
